@@ -2,15 +2,15 @@ import { stravaClientId } from "@/config";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const protocol = req.headers["x-forwarded-proto"] ? "https" : "http";
-  const redirectUri = `${protocol}://${req.headers.host}/`; // Update with your actual redirect URI
+  const redirectUri = `://${req.headers.host}/`; // Update with your actual redirect URI
+  const protocol = redirectUri.includes("localhost") ? "http" : "https";
 
   const { code } = req.query;
 
   try {
     if (!code) {
       // Step 1: Redirect user to Strava for authentication
-      const authUrl = `https://www.strava.com/oauth/authorize?client_id=${stravaClientId}&redirect_uri=${redirectUri}&response_type=code&scope=activity:read_all`;
+      const authUrl = `https://www.strava.com/oauth/authorize?client_id=${stravaClientId}&redirect_uri=${protocol}${redirectUri}&response_type=code&scope=activity:read_all`;
 
       res.redirect(authUrl);
     } else {
